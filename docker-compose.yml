@@ -1,0 +1,43 @@
+version: "3.7"
+services:
+    # imagem micro 01
+    service_mails:
+        build:
+            args:
+                user: luanramos
+                uid: 1000
+            context: ./
+            dockerfile: Dockerfile
+        image: laravel-app
+        restart: unless-stopped
+        working_dir: /var/www/
+        volumes:
+            - ./:/var/www
+        depends_on:
+            - redis_micro_mails
+        networks:
+            - service_mails_network
+        extra_hosts:
+            - host.docker.internal:host-gateway
+
+    # nginx
+    nginx:
+        image: nginx:alpine
+        restart: unless-stopped
+        ports:
+            - 8004:80
+        volumes:
+            - ./:/var/www
+            - ./docker/nginx/:/etc/nginx/conf.d/
+        networks:
+            - service_mails_network
+
+    #redis
+    redis_micro_mails:
+        image: redis:latest
+        networks:
+            - service_mails_network
+
+networks:
+    service_mails_network:
+        driver: bridge
