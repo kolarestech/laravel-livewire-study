@@ -5,6 +5,7 @@ use App\Http\Controllers\CreatorController;
 use App\Http\Controllers\DenounceController;
 use App\Http\Controllers\FollowerController;
 use App\Jobs\CustomerAccountCreated as JobsCustomerAccountCreated;
+use App\Jobs\CustomerVerifyToken;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('teste', function () {
-    JobsCustomerAccountCreated::dispatch('teste@test.com');
+    //JobsCustomerAccountCreated::dispatch('teste@test.com')->onQueue('queue_email');
+    (new CustomerVerifyToken("teste@test.com", "1234"))->dispatch("teste@test.com", "1234")->onQueue("queue_email");
     return response()->json(["message" => "success"]);
 });

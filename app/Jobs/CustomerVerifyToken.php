@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Mail\CustomerAccountCreated as MailCustomerAccountCreated;
+use App\Mail\CustomerVerifyToken as MailCustomerVerifyToken;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,18 +11,21 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 
-class CustomerAccountCreated implements ShouldQueue
+class CustomerVerifyToken implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    protected $token;
     protected $email;
+
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(string $email)
+    public function __construct(string $email, string $token)
     {
+        $this->token = $token;
         $this->email = $email;
     }
 
@@ -33,6 +36,6 @@ class CustomerAccountCreated implements ShouldQueue
      */
     public function handle()
     {
-        Mail::to($this->email)->send(new MailCustomerAccountCreated());
+        Mail::to($this->email)->send(new MailCustomerVerifyToken($this->token));
     }
 }
